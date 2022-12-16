@@ -34,7 +34,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-  ],
+, "src/default/DefaultInventoryState.js", "src/default/DefaultInventoryState.js"  ],
   "exclude": [
     "node_modules"
   ]

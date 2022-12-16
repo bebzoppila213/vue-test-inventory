@@ -1,6 +1,6 @@
 export const defaultState = [{
         id: 1,
-        checkeredId: 1,
+        cellId: 1,
         img: "./assets/pat.png",
         count: 160,
         name: 'Патроны',
@@ -8,7 +8,7 @@ export const defaultState = [{
     },
     {
         id: 2,
-        checkeredId: 5,
+        cellId: 5,
         img: "./assets/med.png",
         count: 2,
         name: 'Аптечка',

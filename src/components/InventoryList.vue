@@ -2,7 +2,7 @@
   <div class="inventory-list">
     <inventory-modal
       @closeModal="modalIsOpen = false"
-      :inventoryItem="items.find((itm) => itm.id === activeItemId)"
+      :inventoryItem="items.find((itm) => itm.id === activeModalItemId)"
       v-if="modalIsOpen"
       @changeInventoryItemCount="changeInventoryItemCount"
     ></inventory-modal>
@@ -17,10 +17,10 @@
       <inventory-item
         @customClick="updateActiveModalItemId"
         @customDragStart="onDragStart"
-        :img="getItemByCheckeredId(indx).img"
-        :id="getItemByCheckeredId(indx).id"
-        :count="getItemByCheckeredId(indx).count"
-        v-if="getItemByCheckeredId(indx)"
+        :img="getItemByСellId(indx)?.img"
+        :id="getItemByСellId(indx)?.id"
+        :count="getItemByСellId(indx)?.count"
+        v-if="getItemByСellId(indx)"
       />
     </div>
   </div>
@@ -28,7 +28,7 @@
 
 <script>
 import InventoryItem from "./InventoryItem.vue";
-import { defaultState } from "../default/DefaultInventoryState";
+import { defaultState, InventaryItemType } from "../default/DefaultInventoryState";
 import InventoryModal from "./InventoryModal.vue";
 export default {
   name: "InventoryList",
@@ -48,7 +48,7 @@ export default {
     return {
       items: defaultState,
       activeDrugId: 0,
-      activeModalItemId: null,
+      activeModalItemId: 0,
       modalIsOpen: false,
     };
   },
@@ -56,6 +56,7 @@ export default {
   methods: {
     changeInventoryItemCount(data) {
       const item = this.items.find((itm) => itm.id === data.id);
+      if(!item) return null
       item.count = Math.max(0, item.count - data.value);
       if (item.count === 0) {
         this.modalIsOpen = false;
@@ -67,8 +68,8 @@ export default {
       this.modalIsOpen = true;
     },
 
-    getItemByCheckeredId(checkeredId) {
-      const item = this.items.find((itm) => itm.checkeredId === checkeredId);
+    getItemByСellId(cellId) {
+      const item = this.items.find((itm) => itm.cellId === cellId);
       if (item) {
         return item;
       }
@@ -79,17 +80,17 @@ export default {
       this.activeDrugId = idItem.id;
     },
 
-    onDrop(e, categoryId) {
+    onDrop(_, cellId) {
       const item = this.items.find((itm) => itm.id === this.activeDrugId);
       if (item) {
-        item.checkeredId = categoryId;
+        item.cellId = cellId;
       }
     },
   },
 
   watch: {
     items: {
-      handler: function (val, oldVal) {
+      handler: function (val) {
         localStorage.setItem("InventoryList", JSON.stringify(val));
       },
       deep: true,

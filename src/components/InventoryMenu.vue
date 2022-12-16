@@ -44,10 +44,7 @@ export default {
     onClickBtnConfirm() {
       const regNumber = /^\d+$/;
       if (regNumber.test(this.inputState)) {
-        this.$emit("changeInventoryItemCount", {
-          id: this.inventoryItem.id,
-          value: Number(this.inputState),
-        });
+        this.$emit("changeInventoryItemCount", {id: this.inventoryItem.id,value: Number(this.inputState),});
         this.menuIsOpen = false;
         this.errors = false;
       } else {
