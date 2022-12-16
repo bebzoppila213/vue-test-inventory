@@ -1,11 +1,11 @@
 <template>
   <div class="inventory-list">
-    <InventoryModal
+    <inventory-modal
       @closeModal="modalIsOpen = false"
       :inventoryItem="items.find((itm) => itm.id === activeItemId)"
       v-if="modalIsOpen"
       @changeInventoryItemCount="changeInventoryItemCount"
-    ></InventoryModal>
+    ></inventory-modal>
     <div
       @dragover.prevent
       @dragenter.prevent
@@ -14,8 +14,8 @@
       v-for="(arrItem, indx) in new Array(30).fill(0)"
       class="inventory-list__item"
     >
-      <InventoryItem
-        @customClick="updateActiveItemId"
+      <inventory-item
+        @customClick="updateActiveModalItemId"
         @customDragStart="onDragStart"
         :img="getItemByCheckeredId(indx).img"
         :id="getItemByCheckeredId(indx).id"
@@ -48,7 +48,7 @@ export default {
     return {
       items: defaultState,
       activeDrugId: 0,
-      activeItemId: null,
+      activeModalItemId: null,
       modalIsOpen: false,
     };
   },
@@ -62,8 +62,8 @@ export default {
         this.items = this.items.filter((fItem) => fItem.id !== item.id);
       }
     },
-    updateActiveItemId(data) {
-      this.activeItemId = data.id;
+    updateActiveModalItemId(data) {
+      this.activeModalItemId = data.id;
       this.modalIsOpen = true;
     },
 
@@ -99,6 +99,19 @@ export default {
 </script>
 
 <style>
+.inventory-list {
+  flex: 1 1 70%;
+  background-color: #4d4d4d;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  overflow: auto;
+}
+.inventory-list__item {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 2;
+  aspect-ratio: 1/ 1;
+}
 .inventory-list {
   position: relative;
 }

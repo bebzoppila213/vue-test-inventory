@@ -17,65 +17,30 @@
         Колличество {{ inventoryItem.count }}
       </li>
     </ul>
-    <div v-if="menuIsOpen" class="inventory-modal__menu">
-      <input v-model="inputState" :class="getInputClass" type="text" />
-      <button
-        @click="menuIsOpen = false"
-        class="inventory-modal__menu-cansel inventory-modal__menu-btn"
-      >
-        Отмена
-      </button>
-      <button
-        @click="onClickBtnConfirm"
-        class="inventory-modal__menu-confirm inventory-modal__menu-btn"
-      >
-        Подтвердить
-      </button>
-    </div>
-    <button
-      v-if="!menuIsOpen"
-      @click="menuIsOpen = true"
-      class="inventory-modal__btn"
-    >
-      Удалить предмет
-    </button>
+    <inventory-menu @changeInventoryItemCount="(data) => $emit('changeInventoryItemCount', data)" :inventoryItem="inventoryItem"></inventory-menu>
+    
   </div>
 </template>
 
 <script>
+import InventoryMenu from "./InventoryMenu.vue";
+
 export default {
+  components: {
+    InventoryMenu,
+  },
   props: {
     inventoryItem: Object,
   },
   data: () => {
     return {
-      menuIsOpen: false,
-      inputState: "",
-      errors: false,
     };
   },
 
   methods: {
-    onClickBtnConfirm() {
-      if (/^\d+$/.test(this.inputState)) {
-        this.$emit("changeInventoryItemCount", {
-          id: this.inventoryItem.id,
-          value: Number(this.inputState),
-        });
-        this.menuIsOpen = false;
-        this.errors = false;
-      } else {
-        this.errors = true;
-      }
-    },
+
   },
   computed: {
-    getInputClass() {
-      return (
-        "inventory-modal__menu-input " +
-        (this.errors ? "inventory-modal__menu-input--error" : "")
-      );
-    },
   },
 };
 </script>
@@ -113,11 +78,7 @@ export default {
 }
 
 .inventory-modal__menu {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
+  
 }
 
 .inventory-modal__menu-input {
@@ -135,11 +96,13 @@ export default {
 
 .inventory-modal__menu-cansel {
   background-color: #fff;
+  flex:1 1 40%;
 }
 
 .inventory-modal__menu-confirm {
   background-color: #fa7272;
   color: #fff;
+  flex:1 1 40%;
 }
 
 .inventory-modal__menu-input {
