@@ -1,9 +1,9 @@
 <template>
   <div class="inventory-list">
     <inventory-modal
-      @closeModal="modalIsOpen = false"
-      :inventoryItem="items.find((itm) => itm.id === activeModalItemId)"
-      v-if="modalIsOpen"
+      @closeModal="closeElement()"
+      :inventoryItem="inventory.find((itm) => itm.id === activeModalItemId)"
+      v-if="elementIsOpen"
       @changeInventoryItemCount="changeInventoryItemCount"
     ></inventory-modal>
     <div
@@ -15,11 +15,9 @@
       class="inventory-list__item"
     >
       <inventory-item
-        @customClick="updateActiveModalItemId"
+        :inventoryItem="getItemByСellId(indx)"
+        @customClick="openInventoryModal"
         @customDragStart="onDragStart"
-        :img="getItemByСellId(indx)?.img"
-        :id="getItemByСellId(indx)?.id"
-        :count="getItemByСellId(indx)?.count"
         v-if="getItemByСellId(indx)"
       />
     </div>
@@ -28,48 +26,51 @@
 
 <script>
 import InventoryItem from "./InventoryItem.vue";
-import { defaultState, InventaryItemType } from "../default/DefaultInventoryState";
+import { defaultState } from "../default/DefaultInventoryState";
 import InventoryModal from "./InventoryModal.vue";
+import OpenCloseElementMixin from "../mixins/OpenCloseElementMixin.vue"
+
 export default {
   name: "InventoryList",
   components: {
     InventoryItem,
     InventoryModal,
   },
+  mixins: [OpenCloseElementMixin],
 
   created() {
     const data = localStorage.getItem("InventoryList");
     if (data) {
-      this.items = JSON.parse(data);
+      this.inventory = JSON.parse(data);
     }
   },
 
   data: () => {
     return {
-      items: defaultState,
+      inventory: defaultState,
       activeDrugId: 0,
       activeModalItemId: 0,
-      modalIsOpen: false,
     };
   },
 
   methods: {
     changeInventoryItemCount(data) {
-      const item = this.items.find((itm) => itm.id === data.id);
-      if(!item) return null
-      item.count = Math.max(0, item.count - data.value);
-      if (item.count === 0) {
-        this.modalIsOpen = false;
-        this.items = this.items.filter((fItem) => fItem.id !== item.id);
+      const inventoryItem = this.inventory.find((itm) => itm.id === data.id);
+      if(!inventoryItem) return null
+      inventoryItem.count = Math.max(0, inventoryItem.count - data.value);
+      if (inventoryItem.count === 0) {
+        this.openElement()
+        this.inventoryItem = this.inventory.filter((fItem) => fItem.id !== inventoryItem.id);
       }
     },
-    updateActiveModalItemId(data) {
+
+    openInventoryModal(data) {
       this.activeModalItemId = data.id;
-      this.modalIsOpen = true;
+      this.openElement()
     },
 
     getItemByСellId(cellId) {
-      const item = this.items.find((itm) => itm.cellId === cellId);
+      const item = this.inventory.find((itm) => itm.cellId === cellId);
       if (item) {
         return item;
       }
@@ -81,15 +82,15 @@ export default {
     },
 
     onDrop(_, cellId) {
-      const item = this.items.find((itm) => itm.id === this.activeDrugId);
-      if (item) {
-        item.cellId = cellId;
+      const inventoryItem = this.inventory.find((itm) => itm.id === this.activeDrugId);
+      if (inventoryItem) {
+        inventoryItem.cellId = cellId;
       }
     },
   },
 
   watch: {
-    items: {
+    inventory: {
       handler: function (val) {
         localStorage.setItem("InventoryList", JSON.stringify(val));
       },

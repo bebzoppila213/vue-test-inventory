@@ -5,34 +5,36 @@
     @dragstart="onDragStart"
     class="inventory-list__item-inner"
   >
-    <img draggable="false" :src="img" alt="" />
-    <div class="inventory-list__item-number">{{count}}</div>
+    <img draggable="false" :src="inventoryItem.img" alt="" />
+    <div class="inventory-list__item-number">{{ inventoryItem.count }}</div>
   </div>
 </template>
 
 <script>
+
 export default {
   props: {
-    img: String,
-    id: Number,
-    count: Number
+    inventoryItem: Object,
   },
   methods: {
     onDragStart(event) {
-        event.target.classList.add("inventory-list__item-inner--dragable")
-        setTimeout(() => {
-            event.target.classList.remove("inventory-list__item-inner--dragable")
-        }, 0);
-        event.dataTransfer.dropEffect = "move";
-        event.dataTransfer.effectAllowed = "move";
-        this.$emit("customDragStart", { id: this.id });
+      this.changeClassDragElement(event);
+      event.dataTransfer.dropEffect = "move";
+      event.dataTransfer.effectAllowed = "move";
+      this.$emit("customDragStart", { id: this.inventoryItem.id });
     },
 
-    onClick(){
-        this.$emit("customClick", { id: this.id });
-    }
-  },
+    changeClassDragElement(event) {
+      event.target.classList.add("inventory-list__item-inner--dragable");
+      setTimeout(() => {
+        event.target.classList.remove("inventory-list__item-inner--dragable");
+      }, 0);
+    },
 
+    onClick() {
+      this.$emit("customClick", { id: this.inventoryItem.id });
+    },
+  },
 };
 </script>
 
@@ -49,7 +51,6 @@ export default {
   height: 100%;
 }
 
-
 .inventory-list__item-inner {
   width: 100%;
   height: 100%;
@@ -59,10 +60,10 @@ export default {
   position: relative;
   cursor: grab;
 }
-.inventory-list__item-inner--dragable{
+.inventory-list__item-inner--dragable {
   border-radius: 20px;
-  border: 3px solid #4D4D4D;
+  border: 3px solid #4d4d4d;
   background-color: #262626;
-  box-shadow: 0px 5px 61px -3px rgba(0,0,0,0.1);
+  box-shadow: 0px 5px 61px -3px rgba(0, 0, 0, 0.1);
 }
 </style>

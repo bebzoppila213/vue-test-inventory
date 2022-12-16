@@ -1,9 +1,9 @@
 <template>
   <div  class="inventory-modal__menu">
-    <div class="inventory-modal__menu-form" v-if="menuIsOpen">
+    <div class="inventory-modal__menu-form" v-if="elementIsOpen">
       <input v-model="inputState" :class="getInputClass" type="text" />
       <button
-        @click="menuIsOpen = false"
+        @click="closeElement()"
         class="inventory-modal__menu-cansel inventory-modal__menu-btn"
       >
         Отмена
@@ -17,8 +17,8 @@
     </div>
     <div>
       <button
-        v-if="!menuIsOpen"
-        @click="menuIsOpen = true"
+        v-if="!elementIsOpen"
+        @click="openElement()"
         class="inventory-modal__btn"
       >
         Удалить предмет
@@ -28,14 +28,17 @@
 </template>
 
 <script>
+
+import OpenCloseElementMixin from "../mixins/OpenCloseElementMixin.vue"
+
 export default {
   props:{
     inventoryItem: Object,
   },
+  mixins:[OpenCloseElementMixin],
   data: () => {
     return {
       inputState: "",
-      menuIsOpen: false,
       errors: false,
     };
   },
@@ -44,13 +47,18 @@ export default {
     onClickBtnConfirm() {
       const regNumber = /^\d+$/;
       if (regNumber.test(this.inputState)) {
-        this.$emit("changeInventoryItemCount", {id: this.inventoryItem.id,value: Number(this.inputState),});
-        this.menuIsOpen = false;
-        this.errors = false;
+        this.validNumber();
       } else {
         this.errors = true;
       }
     },
+
+    validNumber(){
+      this.$emit("changeInventoryItemCount", {id: this.inventoryItem.id,value: Number(this.inputState),});
+        this.closeElement();
+        this.errors = false;
+        this.inputState = ''
+    }
   },
 
   computed: {
