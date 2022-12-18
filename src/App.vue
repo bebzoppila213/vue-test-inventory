@@ -1,73 +1,91 @@
 <template>
-  <div class="inventory-black inventory">
+  <section class="inventory">
     <div class="container">
       <div class="inventory__inner">
-        <inventory-sidebar> </inventory-sidebar>
-        <inventory-list></inventory-list>
+        <div class="inventory-main">
+          <InventorySidebar></InventorySidebar>
+          <InventoryList
+            @openModalInfo="openModalInfo"
+            @updateElementCell="updateElementCell"
+            :inventory="inventory"
+          ></InventoryList>
+          <InventoryModal
+            @closeModal="closeModal()"
+            v-if="modalIsOpen"
+            :inventoryItem="modalInventoryData"
+            @changeInventoryItemCount="changeInventoryItemCount"
+          ></InventoryModal>
+        </div>
+        <div class="inventory-search">
+          <button class="inventory-search__btn"></button>
+          <input class="inventory-search__input" type="text" />
+        </div>
       </div>
     </div>
-  </div>
-  <div>
-  </div>
+  </section>
 </template>
 
 <script>
-import InventoryList from "./components/InventoryList.vue"
-import InventorySidebar from "./components/InventorySidebar.vue"
-
+import InventoryList from "@/components/InventoryList.vue";
+import InventorySidebar from "@/components/InventorySidebar.vue";
+import InventoryModal from "@/components/InventoryModal.vue";
+import { defaultState } from "@/default/DefaultInventory";
+import ModalMixin from "@/mixins/ModalMixin.vue";
 export default {
-  name: "App",
-  components: {
-    InventoryList,
-    InventorySidebar
+  components: { InventoryList, InventorySidebar, InventoryModal },
+  mixins: [ModalMixin],
+
+  created() {
+    const inventory = localStorage.getItem("inventory");
+    if (inventory) {
+      this.inventory = JSON.parse(inventory);
+    }
+    this.setSelector(".inventory-modal");
   },
 
   data: () => {
     return {
-
+      inventory: defaultState,
+      modalInventoryData: null,
     };
   },
 
   methods: {
+    findInventoryItemById(elementId) {
+      return this.inventory.find((inventoryI) => inventoryI.id === elementId);
+    },
 
+    updateElementCell({ elementId, indexCell }) {
+      const inventoryItem = this.findInventoryItemById(elementId);
+      if (!inventoryItem) return null;
+      inventoryItem.cellId = indexCell;
+    },
+
+    openModalInfo({ id }) {
+      this.modalInventoryData = this.findInventoryItemById(id);
+      this.openModal();
+    },
+
+    changeInventoryItemCount({ id, count }) {
+      const inventoryItem = this.findInventoryItemById(id);
+      inventoryItem.count = Math.max(0, inventoryItem.count - count);
+      this.inventory = this.inventory.filter(
+        (inventoryItem) => inventoryItem.count > 0
+      );
+    },
+  },
+
+  watch: {
+    inventory: {
+      handler(val) {
+        localStorage.setItem("inventory", JSON.stringify(val));
+      },
+      deep: true,
+    },
   },
 };
 </script>
 
 <style>
-@import url("./assets/fonts/stylesheet.css");
-body{
-  background-color: #1E1E1E;
-}
-* {
-  padding: 0px;
-  margin: 0px;
-  box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-}
-img {
-  max-width: 100%;
-}
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.inventory__inner {
-  display: flex;
-  position: relative;
-  gap: 30px;
-  height: 470px;
-  /*  */
-  color: #fff;
-}
-
-
-.inventory-list::-webkit-scrollbar {
-  display: none;
-}
-.inventory-list::-webkit-scrollbar-track {
-  display: none;
-}
-
+@import url(./assets/style/style.css);
 </style>
