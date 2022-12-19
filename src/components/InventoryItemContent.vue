@@ -4,6 +4,7 @@
     @dragstart="onDragStart"
     draggable="true"
     class="inventory-list__content"
+    ref="inventoryListContent"
   >
     <img draggable="false" :src="inventoryItem.img" alt="Карточка" />
     <span class="inventory-list__conten-count">{{ inventoryItem.count }}</span>
@@ -21,6 +22,11 @@ export default {
 
   methods: {
     onDragStart(event) {
+      this.$refs.inventoryListContent.classList.add('inventory-list__content--drag')
+      setTimeout(() => {
+        this.$refs.inventoryListContent.classList.remove('inventory-list__content--drag')
+      }, 0);
+
       event.dataTransfer.dropEffect = "move";
       event.dataTransfer.effectAllowed = "move";
       this.$emit("dragStart", { id: this.inventoryItem.id });

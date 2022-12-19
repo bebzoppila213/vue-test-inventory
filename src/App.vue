@@ -59,10 +59,8 @@ export default {
 
     updateElementCell({ elementId, indexCell }) {
       const inventoryItem = this.findInventoryItemById(elementId);
-      console.log(inventoryItem);
       if (!inventoryItem) return null;
       inventoryItem.cellId = indexCell;
-      console.log(inventoryItem);
     },
 
     openModalInfo({ id }) {
