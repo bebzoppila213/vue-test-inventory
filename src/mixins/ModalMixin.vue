@@ -28,7 +28,7 @@ export default {
         this.modalData = newModalData
     },
 
-    setSelector(newSelector) {
+    setModalSelector(newSelector) {
       this.selector = newSelector;
     },
 

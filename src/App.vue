@@ -42,7 +42,7 @@ export default {
   mixins: [ModalMixin, localStorageMixin],
 
   created() {
-    this.setSelector(".inventory-modal");
+    this.setModalSelector(".inventory-modal");
     this.setLocalStorageField('inventory')
   },
 
