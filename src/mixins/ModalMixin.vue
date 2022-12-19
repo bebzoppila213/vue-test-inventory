@@ -1,44 +1,49 @@
 
 <script>
 export default {
+  mounted() {
+    document.addEventListener("click", this.documentClick);
+  },
 
-    mounted(){
-        document.addEventListener('click', (event) => {
-            const element = document.querySelector(this.selector)
-            if(this.flag){
-                if(!event.composedPath().includes(element)){
-                    this.modalIsOpen = false
-                    this.flag = false
-                }
-                
-                return 
-            }
-            this.flag = true
-        })
+  data: () => {
+    return {
+      modalIsOpen: false,
+      modalSelector: "",
+      flag: false,
+      modalData: null,
+    };
+  },
+
+  methods: {
+    openModal() {
+      this.modalIsOpen = true;
     },
 
-    data: () => {
-        return{
-            modalIsOpen: false,
-            modalSelector: '',
-            flag: false,
-        }
+    closeModal() {
+      console.log("close");
+      this.modalIsOpen = false;
     },
 
-    methods:{
-        openModal(){
-            this.modalIsOpen = true
-        },
+    setModalData(newModalData){
+        this.modalData = newModalData
+    },
 
-        closeModal(){
-            this.modalIsOpen = false
-        },
+    setSelector(newSelector) {
+      this.selector = newSelector;
+    },
 
-        setSelector(newSelector){
-            this.selector = newSelector
+    documentClick(event) {
+      const element = document.querySelector(this.selector);
+      if (this.flag) {
+        if (!event.composedPath().includes(element)) {
+          this.modalIsOpen = false;
+          this.flag = false;
         }
 
-    }
-
-}   
+        return;
+      }
+      this.flag = true;
+    },
+  },
+};
 </script>

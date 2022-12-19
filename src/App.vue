@@ -3,18 +3,22 @@
     <div class="container">
       <div class="inventory__inner">
         <div class="inventory-main">
+
           <InventorySidebar></InventorySidebar>
+
           <InventoryList
             @openModalInfo="openModalInfo"
             @updateElementCell="updateElementCell"
             :inventory="inventory"
           ></InventoryList>
+
           <InventoryModal
             @closeModal="closeModal()"
             v-if="modalIsOpen"
-            :inventoryItem="modalInventoryData"
+            :inventoryItem="modalData"
             @changeInventoryItemCount="changeInventoryItemCount"
           ></InventoryModal>
+          
         </div>
         <div class="inventory-search">
           <button class="inventory-search__btn"></button>
@@ -31,22 +35,20 @@ import InventorySidebar from "@/components/InventorySidebar.vue";
 import InventoryModal from "@/components/InventoryModal.vue";
 import { defaultState } from "@/default/DefaultInventory";
 import ModalMixin from "@/mixins/ModalMixin.vue";
+import localStorageMixin from "@/mixins/LocalStorageMixin.vue"
+
 export default {
   components: { InventoryList, InventorySidebar, InventoryModal },
-  mixins: [ModalMixin],
+  mixins: [ModalMixin, localStorageMixin],
 
   created() {
-    const inventory = localStorage.getItem("inventory");
-    if (inventory) {
-      this.inventory = JSON.parse(inventory);
-    }
     this.setSelector(".inventory-modal");
+    this.setLocalStorageField('inventory')
   },
 
   data: () => {
     return {
       inventory: defaultState,
-      modalInventoryData: null,
     };
   },
 
@@ -62,7 +64,7 @@ export default {
     },
 
     openModalInfo({ id }) {
-      this.modalInventoryData = this.findInventoryItemById(id);
+      this.modalData = this.findInventoryItemById(id);
       this.openModal();
     },
 
@@ -72,15 +74,6 @@ export default {
       this.inventory = this.inventory.filter(
         (inventoryItem) => inventoryItem.count > 0
       );
-    },
-  },
-
-  watch: {
-    inventory: {
-      handler(val) {
-        localStorage.setItem("inventory", JSON.stringify(val));
-      },
-      deep: true,
     },
   },
 };
